@@ -35,10 +35,46 @@ namespace ToDoWeb.Repositories.Interface
             return existingToDo;
         }
 
-        public async Task<List<ToDoItem>> GetAllToDoListAsync(string userId)
+        public async Task<List<ToDoItem>> GetAllToDoListAsync(string userId, string? isCompleted, string? priority, int pageNumber = 1, int pageSize = 1000)
         {
-            return await appDbContext.ToDoItems.Where(x => x.UserId == userId).ToListAsync();
+            var query = appDbContext.ToDoItems.Where(x => x.UserId == userId);
+
+            // Filtering
+            if (!string.IsNullOrEmpty(isCompleted))
+            {
+                switch (isCompleted.ToLower())
+                {
+                    case "completed":
+                        query = query.Where(x => x.IsCompleted);
+                        break;
+                    case "on-going":
+                        query = query.Where(x => !x.IsCompleted);
+                        break;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(priority))
+            {
+                switch (priority.ToLower())
+                {
+                    case "easy":
+                        query = query.Where(x => x.Priority == PriorityLevel.Easy);
+                        break;
+                    case "medium":
+                        query = query.Where(x => x.Priority == PriorityLevel.Medium);
+                        break;
+                    case "hard":
+                        query = query.Where(x => x.Priority == PriorityLevel.Hard);
+                        break;
+                }
+            }
+
+            //Pagination
+            var skipResult = (pageNumber - 1) * pageSize;
+
+            return await query.Skip(skipResult).Take(pageSize).ToListAsync();
         }
+
 
         public async Task<ToDoItem?> GetToDoByIdAsync(Guid id, string userId)
         {

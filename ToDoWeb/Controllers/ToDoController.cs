@@ -25,13 +25,14 @@ namespace ToDoWeb.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] string? isCompleted, [FromQuery] string? priority,
+            [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 1000)
         {
             var userId = GetUserId();
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized("Người dùng chưa đăng nhập!");
 
-            var toDoDomainModel = await service.GetAllToDoListAsync(userId);
+            var toDoDomainModel = await service.GetAllToDoListAsync(userId, isCompleted, priority, pageNumber, pageSize);
 
             var toDoDto = mapper.Map<List<GetAllDTO>>(toDoDomainModel);
             return Ok(toDoDto);

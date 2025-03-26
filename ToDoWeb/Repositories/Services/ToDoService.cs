@@ -24,9 +24,9 @@ namespace ToDoWeb.Repositories.Services
             return await toDoRepository.DeleteToDoItemAsync(id, userId);
         }
 
-        public async Task<List<ToDoItem>> GetAllToDoListAsync(string userId)
+        public async Task<List<ToDoItem>> GetAllToDoListAsync(string userId, string? isCompleted, string? priority, int pageNumber = 1, int pageSize = 1000)
         {
-            return await toDoRepository.GetAllToDoListAsync(userId);
+            return await toDoRepository.GetAllToDoListAsync(userId, isCompleted, priority, pageNumber, pageSize);
         }
 
         public async Task<ToDoItem?> GetToDoByIdAsync(Guid id, string userId)
